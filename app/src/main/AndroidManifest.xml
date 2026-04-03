@@ -13,8 +13,7 @@
         android:theme="@style/Theme.SimpleFinanceTracker">
         <activity
             android:name=".MainActivity"
-            android:exported="true"
-            android:theme="@style/Theme.SimpleFinanceTracker">
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -24,7 +23,6 @@
 
         <activity
             android:name=".AddExpenseActivity"
-            android:theme="@style/Theme.AppCompat.Dialog"
             android:exported="false"/>
 
     </application>

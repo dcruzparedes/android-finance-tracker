@@ -3,6 +3,8 @@ package com.example.simplefinancetracker
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.Transaction
+
 // Flow: Self updating data stream
 import kotlinx.coroutines.flow.Flow
 
@@ -18,6 +20,10 @@ interface ExpenseDao {
 
     @Query("DELETE FROM expenses WHERE id = :id")
     suspend fun deleteExpense(id: Int)
+
+    @Transaction
+    @Query("SELECT * FROM expenses ORDER BY date DESC")
+    fun getAllExpensesWithCategories(): Flow<List<ExpenseWithCategories>>
 }
 
 // !! Suspend means the function runs in a coroutine

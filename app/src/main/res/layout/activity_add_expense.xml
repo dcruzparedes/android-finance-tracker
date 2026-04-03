@@ -58,8 +58,10 @@
         <!-- CANCEL BUTTON -->
         <Button
             android:id="@+id/btnCancel"
+            style="@style/ShapeAppearanceOverlay.Material3.Button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:insetRight="8dp"
             android:text="Cancel"
             android:textSize="18sp" />
 

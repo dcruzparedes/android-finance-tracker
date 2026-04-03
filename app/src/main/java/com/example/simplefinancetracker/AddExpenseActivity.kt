@@ -33,7 +33,7 @@ class AddExpenseActivity : AppCompatActivity() {
         lifecycleScope.launch {
             // Load categories from database
             allCategories = db.categoryDao().getAllCategories().first()
-            
+
             // If database is empty, send some default categories
             if (allCategories.isEmpty()) {
                 val defaultNames = listOf("Food", "Work", "University", "Other")
@@ -46,6 +46,11 @@ class AddExpenseActivity : AppCompatActivity() {
             val categoryNames = allCategories.map { it.name }
             val adapter = ArrayAdapter(this@AddExpenseActivity, android.R.layout.simple_dropdown_item_1line, categoryNames)
             binding.actvCategory.setAdapter(adapter)
+            binding.actvCategory.setOnClickListener {
+                binding.actvCategory.showDropDown()
+            }
+            // Make it so the keyboard doesn't pop up when the dropdown is clicked
+            binding.actvCategory.inputType = android.text.InputType.TYPE_NULL
         }
     }
 
@@ -100,7 +105,7 @@ class AddExpenseActivity : AppCompatActivity() {
                 ).toInt()
 
                 val category = allCategories.find { it.name == selectedCategoryName }
-                
+
                 // Link category and expense in the Join Table
                 if (category != null) {
                     db.categoryDao().insertExpenseCategoryRef(

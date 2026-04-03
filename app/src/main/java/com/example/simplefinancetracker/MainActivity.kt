@@ -1,47 +1,45 @@
 package com.example.simplefinancetracker
 
+import android.content.Intent
 import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.example.simplefinancetracker.ui.theme.SimpleFinanceTrackerTheme
+import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.simplefinancetracker.databinding.ActivityMainBinding
+import kotlinx.coroutines.launch
 
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
+
+    private lateinit var binding: ActivityMainBinding
+    private lateinit var adapter: ExpenseAdapter
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            SimpleFinanceTrackerTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
-            }
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        setupRecyclerView()
+        observeExpenses()
+
+        binding.fab.setOnClickListener {
+            startActivity(Intent(this, AddExpenseActivity::class.java))
         }
     }
-}
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
+    private fun setupRecyclerView() {
+        adapter = ExpenseAdapter()
+        binding.rvExpenses.layoutManager = LinearLayoutManager(this)
+        binding.rvExpenses.adapter = adapter
+    }
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    SimpleFinanceTrackerTheme {
-        Greeting("Android")
+    private fun observeExpenses() {
+        lifecycleScope.launch {
+            ExpenseDatabase.getDatabase(this@MainActivity)
+                .expenseDao()
+                .getAllExpensesWithCategories()
+                .collect { expenses ->
+                    adapter.submitList(expenses)
+                }
+        }
     }
 }
