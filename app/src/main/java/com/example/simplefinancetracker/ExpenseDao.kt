@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.Flow
 interface ExpenseDao {
 
     @Insert
-    suspend fun insertExpense(expense: Expense)
+    suspend fun insertExpense(expense: Expense): Long
 
     @Query("SELECT * FROM expenses ORDER BY date DESC")
     fun getAllExpenses(): Flow<List<Expense>>

@@ -7,6 +7,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.example.simplefinancetracker.databinding.ActivityAddExpenseBinding
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.util.Calendar
 
@@ -14,6 +15,7 @@ class AddExpenseActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityAddExpenseBinding
     private lateinit var db: ExpenseDatabase
+    private var allCategories: List<Category> = emptyList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,9 +30,23 @@ class AddExpenseActivity : AppCompatActivity() {
     }
 
     private fun setupCategoryDropdown() {
-        val categories = listOf("Food", "Transport", "Health", "Entertainment", "Home", "Other")
-        val adapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, categories)
-        binding.actvCategory.setAdapter(adapter)
+        lifecycleScope.launch {
+            // Load categories from database
+            allCategories = db.categoryDao().getAllCategories().first()
+            
+            // If database is empty, send some default categories
+            if (allCategories.isEmpty()) {
+                val defaultNames = listOf("Food", "Work", "University", "Other")
+                defaultNames.forEach { name ->
+                    db.categoryDao().insertCategory(Category(name = name))
+                }
+                allCategories = db.categoryDao().getAllCategories().first()
+            }
+
+            val categoryNames = allCategories.map { it.name }
+            val adapter = ArrayAdapter(this@AddExpenseActivity, android.R.layout.simple_dropdown_item_1line, categoryNames)
+            binding.actvCategory.setAdapter(adapter)
+        }
     }
 
     private fun setupDatePicker() {
@@ -57,33 +73,44 @@ class AddExpenseActivity : AppCompatActivity() {
             val name = binding.etName.text.toString().trim()
             val amountText = binding.etAmount.text.toString().trim()
             val date = binding.etDate.text.toString().trim()
-            var category = binding.actvCategory.text.toString().trim()
+            var selectedCategoryName = binding.actvCategory.text.toString().trim()
 
             if (name.isEmpty() || amountText.isEmpty() || date.isEmpty()) {
-                Toast.makeText(this, "Please complete all the fields", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Please complete all fields", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            // If no category is selected set it to "No category"
-            if (category.isEmpty()) {
-                category = "No category"
+            if (selectedCategoryName.isEmpty()) {
+                selectedCategoryName = "Other" // TODO: Make sure this is the default category
             }
 
             val amount = amountText.toDoubleOrNull()
             if (amount == null || amount <= 0) {
-                Toast.makeText(this, "Ingresá un monto válido", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Please enter a valid amount", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
             lifecycleScope.launch {
-                db.expenseDao().insertExpense(
+                val expenseId = db.expenseDao().insertExpense(
                     Expense(
                         name = name,
                         amount = amount,
-                        date = date,
-                        category = category
+                        date = date
                     )
-                )
+                ).toInt()
+
+                val category = allCategories.find { it.name == selectedCategoryName }
+                
+                // Link category and expense in the Join Table
+                if (category != null) {
+                    db.categoryDao().insertExpenseCategoryRef(
+                        ExpenseCategoryCrossRef(
+                            expenseId = expenseId,
+                            categoryId = category.id
+                        )
+                    )
+                }
+
                 finish()
             }
         }
