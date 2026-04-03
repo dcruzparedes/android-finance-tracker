@@ -1,4 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">\Simple Finance Tracker\</string>
+    <string name="app_name" translatable="false">" Simple Finance Tracker "</string>
+    <string name="cancel_button_text">Cancel</string>
+    <string name="save_button_text">Add</string>
+    <string name="category_dropdown_hint_text">Category</string>
+    <string name="date_field_hint_text">Date</string>
+    <string name="amount_field_hint_text">Amount</string>
+    <string name="name_description_field_hint_text">Name / Description</string>
+    <string name="new_expense_text">New Expense</string>
+    <string name="add_expense_floatingbutton_description_test">Add Expense</string>
+    <string name="error_complete_fields">Please complete all fields</string>
+    <string name="error_invalid_amount">Please enter a valid amount</string>
 </resources>

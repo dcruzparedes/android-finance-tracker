@@ -81,7 +81,7 @@ class AddExpenseActivity : AppCompatActivity() {
             var selectedCategoryName = binding.actvCategory.text.toString().trim()
 
             if (name.isEmpty() || amountText.isEmpty() || date.isEmpty()) {
-                Toast.makeText(this, "Please complete all fields", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, R.string.error_complete_fields, Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
@@ -91,7 +91,7 @@ class AddExpenseActivity : AppCompatActivity() {
 
             val amount = amountText.toDoubleOrNull()
             if (amount == null || amount <= 0) {
-                Toast.makeText(this, "Please enter a valid amount", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, R.string.error_invalid_amount, Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">" Simple Finance Tracker "</string>
+    <string name="cancel_button_text">Cancelar</string>
+    <string name="save_button_text">Guardar</string>
+    <string name="category_dropdown_hint_text">Categoria</string>
+    <string name="date_field_hint_text">Fecha</string>
+    <string name="amount_field_hint_text">Monto</string>
+    <string name="name_description_field_hint_text">Nombre / Descripción</string>
+    <string name="new_expense_text">Nuevo Gasto</string>
+    <string name="add_expense_floatingbutton_description_test">Agregar Gasto</string>
+    <string name="error_complete_fields">Por favor llena todos los campos</string>
+    <string name="error_invalid_amount">Por favor ingresa un monto válido</string>
+</resources>
