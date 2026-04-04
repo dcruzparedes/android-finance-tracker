@@ -12,4 +12,8 @@
     <string name="add_expense_floatingbutton_description_text">Add Expense</string>
     <string name="error_complete_fields">Please complete all fields</string>
     <string name="error_invalid_amount">Please enter a valid amount</string>
+    <string name="home_nav_button_text">Home</string>
+    <string name="stats_nav_button_text">Stats</string>
+    <string name="settings_nav_button_text">Settings</string>
+    <string name="delete_selected_button_text">Delete Selected</string>
 </resources>

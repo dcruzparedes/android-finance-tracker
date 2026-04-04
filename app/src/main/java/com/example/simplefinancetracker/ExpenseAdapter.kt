@@ -1,5 +1,6 @@
 package com.example.simplefinancetracker
 
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -7,7 +8,12 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.simplefinancetracker.databinding.ItemExpenseBinding
 
-class ExpenseAdapter : ListAdapter<ExpenseWithCategories, ExpenseAdapter.ExpenseViewHolder>(DiffCallback) {
+class ExpenseAdapter(
+    private val onSelectionChanged: (Int) -> Unit
+) : ListAdapter<ExpenseWithCategories, ExpenseAdapter.ExpenseViewHolder>(DiffCallback) {
+
+    private val selectedIds = mutableSetOf<Int>()
+    var isSelectionMode = false
 
     companion object DiffCallback : DiffUtil.ItemCallback<ExpenseWithCategories>() {
         override fun areItemsTheSame(old: ExpenseWithCategories, new: ExpenseWithCategories) =
@@ -24,7 +30,62 @@ class ExpenseAdapter : ListAdapter<ExpenseWithCategories, ExpenseAdapter.Expense
             binding.tvDate.text = item.expense.date
             binding.tvAmount.text = "L. %.2f".format(item.expense.amount) // TODO: Make currency customizable
             binding.tvCategory.text = item.categories.joinToString(", ") { it.name }
+
+            // Visual state for selection
+            val isSelected = selectedIds.contains(item.expense.id)
+            binding.cardView.isChecked = isSelected
+            
+            val context = binding.root.context
+            val typedValue = TypedValue()
+
+            if (isSelected) {
+                // Use theme's highlight color for selected state
+                context.theme.resolveAttribute(com.google.android.material.R.attr.colorControlHighlight, typedValue, true)
+                binding.cardView.setCardBackgroundColor(typedValue.data)
+            } else {
+                // Use theme's surface color for normal state (adapts to Dark/Light mode)
+                context.theme.resolveAttribute(com.google.android.material.R.attr.colorSurface, typedValue, true)
+                binding.cardView.setCardBackgroundColor(typedValue.data)
+            }
+
+            binding.root.setOnLongClickListener {
+                if (!isSelectionMode) {
+                    isSelectionMode = true
+                    toggleSelection(item.expense.id)
+                }
+                true
+            }
+
+            binding.root.setOnClickListener {
+                if (isSelectionMode) {
+                    toggleSelection(item.expense.id)
+                }
+            }
         }
+    }
+
+    private fun toggleSelection(id: Int) {
+        if (selectedIds.contains(id)) {
+            selectedIds.remove(id)
+        } else {
+            selectedIds.add(id)
+        }
+
+        if (selectedIds.isEmpty()) {
+            isSelectionMode = false
+        }
+        
+        onSelectionChanged(selectedIds.size)
+        notifyDataSetChanged() // Refresh to update visual states (TODO: Change this to only refresh the selected item)
+    }
+
+    fun getSelectedIds(): List<Int> = selectedIds.toList()
+
+    fun clearSelection() {
+        selectedIds.clear()
+        isSelectionMode = false
+        onSelectionChanged(0)
+        notifyDataSetChanged()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ExpenseViewHolder {

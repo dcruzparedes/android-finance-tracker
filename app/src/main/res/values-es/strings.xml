@@ -12,4 +12,8 @@
     <string name="add_expense_floatingbutton_description_text">Agregar Gasto</string>
     <string name="error_complete_fields">Por favor llena todos los campos</string>
     <string name="error_invalid_amount">Por favor ingresa un monto válido</string>
+    <string name="home_nav_button_text">Inicio</string>
+    <string name="stats_nav_button_text">Estadísticas</string>
+    <string name="settings_nav_button_text">Ajustes</string>
+    <string name="delete_selected_button_text">Eliminar Seleccionados</string>
 </resources>
