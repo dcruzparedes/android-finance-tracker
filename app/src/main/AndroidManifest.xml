@@ -25,6 +25,17 @@
             android:name=".AddExpenseActivity"
             android:exported="false"/>
 
+        <service
+            android:name=".ExpenseTileService"
+            android:exported="true"
+            android:label="@string/add_expense_text"
+            android:icon="@drawable/ic_launcher_foreground"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
+
     </application>
 
 </manifest>
