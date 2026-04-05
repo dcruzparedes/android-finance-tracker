@@ -25,6 +25,9 @@ interface CategoryDao {
     @Delete
     suspend fun deleteCategory(category: Category)
 
+    @Query("DELETE FROM expense_category_join WHERE expenseId = :expenseId")
+    suspend fun deleteRefsByExpenseId(expenseId: Int)
+
     // Linking the expense to a category
     @Insert
     suspend fun insertExpenseCategoryRef(crossRef: ExpenseCategoryCrossRef)

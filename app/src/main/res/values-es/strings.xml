@@ -16,4 +16,12 @@
     <string name="stats_nav_button_text">Estadísticas</string>
     <string name="settings_nav_button_text">Ajustes</string>
     <string name="delete_selected_button_text">Eliminar Seleccionados</string>
+    <string name="edit_expense_name_text">Nombre del Gasto</string>
+    <string name="save_changes_edit_text">Guardar Cambios</string>
+    <string name="delete_expense_edit_text">Borrar Gasto</string>
+    <string name="error_expense_not_found">Error: Gasto no encontrado</string>
+    <string name="error_name_is_required">Nombre es requerido</string>
+    <string name="expense_updated_success">Gasto actualizado correctamente</string>
+    <string name="error_saving_expense">Error guardando gasto</string>
+    <string name="expense_deleted_success">Gasto eliminado exitosamente</string>
 </resources>

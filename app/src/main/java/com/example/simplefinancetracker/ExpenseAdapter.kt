@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.simplefinancetracker.databinding.ItemExpenseBinding
 
 class ExpenseAdapter(
+    private val onItemClick: (ExpenseWithCategories) -> Unit,
     private val onSelectionChanged: (Int) -> Unit
 ) : ListAdapter<ExpenseWithCategories, ExpenseAdapter.ExpenseViewHolder>(DiffCallback) {
 
@@ -59,6 +60,8 @@ class ExpenseAdapter(
             binding.root.setOnClickListener {
                 if (isSelectionMode) {
                     toggleSelection(item.expense.id)
+                } else {
+                    onItemClick(item)
                 }
             }
         }

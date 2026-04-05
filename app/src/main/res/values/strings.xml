@@ -16,4 +16,13 @@
     <string name="stats_nav_button_text">Stats</string>
     <string name="settings_nav_button_text">Settings</string>
     <string name="delete_selected_button_text">Delete Selected</string>
+    <string name="edit_expense_name_text">Expense Name</string>
+    <string name="save_changes_edit_text">Save Changes</string>
+    <string name="delete_expense_edit_text">Delete Expense</string>
+    <string name="error_expense_not_found">Error: Expense not found</string>
+    <string name="error_name_is_required">Name is required</string>
+    <string name="expense_updated_success">Expense updated successfully</string>
+    <string name="error_saving_expense">Error saving expense</string>
+    <string name="expense_deleted_success">Expense deleted successfully"</string>
+
 </resources>

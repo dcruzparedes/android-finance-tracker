@@ -25,15 +25,23 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupRecyclerView() {
-        adapter = ExpenseAdapter { count ->
-            if (count > 0) {
-                binding.btnDeleteSelected.visibility = View.VISIBLE
-                supportActionBar?.title = "$count selected"
-            } else {
-                binding.btnDeleteSelected.visibility = View.GONE
-                supportActionBar?.title = getString(R.string.app_name)
+        adapter = ExpenseAdapter(
+            onItemClick = { item ->
+                val intent = Intent(this, EditExpenseActivity::class.java).apply {
+                    putExtra("EXPENSE_ID", item.expense.id)
+                }
+                startActivity(intent)
+            },
+            onSelectionChanged = { count ->
+                if (count > 0) {
+                    binding.btnDeleteSelected.visibility = View.VISIBLE
+                    supportActionBar?.title = "$count selected"
+                } else {
+                    binding.btnDeleteSelected.visibility = View.GONE
+                    supportActionBar?.title = getString(R.string.app_name)
+                }
             }
-        }
+        )
         
         binding.rvExpenses.layoutManager = LinearLayoutManager(this)
         binding.rvExpenses.adapter = adapter

@@ -25,6 +25,11 @@
             android:name=".AddExpenseActivity"
             android:exported="false"/>
 
+        <activity
+            android:name=".EditExpenseActivity"
+            android:exported="false"
+            android:label="Edit Expense" />
+
         <service
             android:name=".ExpenseTileService"
             android:exported="true"
