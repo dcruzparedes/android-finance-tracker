@@ -24,5 +24,6 @@
     <string name="expense_updated_success">Expense updated successfully</string>
     <string name="error_saving_expense">Error saving expense</string>
     <string name="expense_deleted_success">Expense deleted successfully"</string>
+    <string name="edit_expense_title">Edit Expense</string>
 
 </resources>

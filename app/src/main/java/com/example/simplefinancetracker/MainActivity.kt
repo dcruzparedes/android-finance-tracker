@@ -1,86 +1,43 @@
 package com.example.simplefinancetracker
 
-import android.content.Intent
 import android.os.Bundle
-import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.fragment.app.Fragment
 import com.example.simplefinancetracker.databinding.ActivityMainBinding
-import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
-    private lateinit var adapter: ExpenseAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        setupRecyclerView()
-        observeExpenses()
-        setupButtons()
-    }
-
-    private fun setupRecyclerView() {
-        adapter = ExpenseAdapter(
-            onItemClick = { item ->
-                val intent = Intent(this, EditExpenseActivity::class.java).apply {
-                    putExtra("EXPENSE_ID", item.expense.id)
-                }
-                startActivity(intent)
-            },
-            onSelectionChanged = { count ->
-                if (count > 0) {
-                    binding.btnDeleteSelected.visibility = View.VISIBLE
-                    supportActionBar?.title = "$count selected"
-                } else {
-                    binding.btnDeleteSelected.visibility = View.GONE
-                    supportActionBar?.title = getString(R.string.app_name)
-                }
-            }
-        )
-        
-        binding.rvExpenses.layoutManager = LinearLayoutManager(this)
-        binding.rvExpenses.adapter = adapter
-    }
-
-    private fun setupButtons() {
-        binding.fab.setOnClickListener {
-            startActivity(Intent(this, AddExpenseActivity::class.java))
+        // Set default fragment
+        if (savedInstanceState == null) {
+            loadFragment(HomeFragment())
         }
 
-        binding.btnDeleteSelected.setOnClickListener {
-            val selectedIds = adapter.getSelectedIds()
-            lifecycleScope.launch {
-                val db = ExpenseDatabase.getDatabase(this@MainActivity)
-                selectedIds.forEach { id ->
-                    db.expenseDao().deleteExpense(id)
-                }
-                adapter.clearSelection()
-            }
-        }
+        setupNavigation()
+    }
 
+    private fun setupNavigation() {
         binding.bottomNavigation.setOnItemSelectedListener { item ->
-            when(item.itemId) {
-                R.id.nav_home -> { /* Navigate to Home */ true }
-                R.id.nav_stats -> { /* Show Stats */ true }
-                R.id.nav_settings -> { /* Show Settings */ true }
-                else -> false
+            val fragment: Fragment = when (item.itemId) {
+                R.id.nav_home -> HomeFragment()
+                R.id.nav_stats -> StatsFragment()
+                R.id.nav_settings -> SettingsFragment()
+                else -> HomeFragment()
             }
+            loadFragment(fragment)
+            true
         }
     }
 
-    private fun observeExpenses() {
-        lifecycleScope.launch {
-            ExpenseDatabase.getDatabase(this@MainActivity)
-                .expenseDao()
-                .getAllExpensesWithCategories()
-                .collect { expenses ->
-                    adapter.submitList(expenses)
-                }
-        }
+    private fun loadFragment(fragment: Fragment) {
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, fragment)
+            .commit()
     }
 }

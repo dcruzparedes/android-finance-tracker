@@ -24,4 +24,5 @@
     <string name="expense_updated_success">Gasto actualizado correctamente</string>
     <string name="error_saving_expense">Error guardando gasto</string>
     <string name="expense_deleted_success">Gasto eliminado exitosamente</string>
+    <string name="edit_expense_title">Editar Gasto</string>
 </resources>

@@ -102,7 +102,7 @@ class EditExpenseActivity : AppCompatActivity() {
             this,
             { _, year, month, dayOfMonth ->
                 selectedDate.set(year, month, dayOfMonth)
-                val dateString = "$year-${month + 1}-$dayOfMonth"
+                val dateString = "$dayOfMonth/${month + 1}/$year"
                 binding.dateEditText.setText(dateString)
             },
             selectedDate.get(Calendar.YEAR),

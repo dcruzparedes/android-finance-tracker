@@ -19,7 +19,7 @@
             app:layout_anchor="@+id/nestedScrollView"
             app:layout_anchorGravity="top|center"
             app:navigationIcon="@drawable/ic_arrow_back"
-            app:title="Edit Expense" />
+            app:title="@string/edit_expense_title"/>
 
     </com.google.android.material.appbar.AppBarLayout>
 
