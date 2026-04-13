@@ -25,4 +25,10 @@
     <string name="error_saving_expense">Error guardando gasto</string>
     <string name="expense_deleted_success">Gasto eliminado exitosamente</string>
     <string name="edit_expense_title">Editar Gasto</string>
+    <string name="sort_by_title_text">Ordenar por</string>
+    <string name="sort_by_creation_date_selection_text">Fecha de creación</string>
+    <string name="sort_by_name_ascending_selection_text">Nombre (A a Z)</string>
+    <string name="sort_by_name_descending_selection_text">Nombre (Z a A)</string>
+    <string name="sort_by_amount_ascending_selection_text">Monto (Ascendente)</string>
+    <string name="sort_by_amount_descending_selection_text">Monto (Descendiente)</string>
 </resources>

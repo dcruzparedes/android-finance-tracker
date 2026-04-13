@@ -10,7 +10,8 @@ data class Expense (
     val id: Int = 0,
     val name: String,
     val amount: Double,
-    val date: String
+    val date: String,
+    val createdAt: Long = System.currentTimeMillis()
 )
 
 // Category entity, representing a category of expenses

@@ -102,7 +102,7 @@ class EditExpenseActivity : AppCompatActivity() {
             this,
             { _, year, month, dayOfMonth ->
                 selectedDate.set(year, month, dayOfMonth)
-                val dateString = "$dayOfMonth/${month + 1}/$year"
+                val dateString = "%d-%02d-%02d".format(year, month + 1, dayOfMonth)
                 binding.dateEditText.setText(dateString)
             },
             selectedDate.get(Calendar.YEAR),
@@ -132,7 +132,19 @@ class EditExpenseActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             try {
-                val updatedExpense = Expense(id = expenseId, name = name, amount = amount, date = date)
+                // Fetch the original expense to preserve its createdAt timestamp
+                val expensesWithCategories = db.expenseDao().getAllExpensesWithCategories().first()
+                val originalExpense = expensesWithCategories.find { it.expense.id == expenseId }?.expense
+                
+                val createdAt = originalExpense?.createdAt ?: System.currentTimeMillis()
+                
+                val updatedExpense = Expense(
+                    id = expenseId, 
+                    name = name, 
+                    amount = amount, 
+                    date = date,
+                    createdAt = createdAt
+                )
                 
                 // Use withTransaction to ensure atomic update of expense and its category links
                 db.withTransaction {

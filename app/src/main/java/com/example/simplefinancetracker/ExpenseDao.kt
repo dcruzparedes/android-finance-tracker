@@ -29,8 +29,25 @@ interface ExpenseDao {
     suspend fun updateExpense(expense: Expense)
 
     @Transaction
-    @Query("SELECT * FROM expenses ORDER BY date DESC")
+    @Query("SELECT * FROM expenses ORDER BY createdAt DESC")
     fun getAllExpensesWithCategories(): Flow<List<ExpenseWithCategories>>
+
+    @Transaction
+    @Query("SELECT * FROM expenses ORDER BY amount DESC")
+    fun getAllExpensesByAmountDesc(): Flow<List<ExpenseWithCategories>>
+
+    @Transaction
+    @Query("SELECT * FROM expenses ORDER BY amount ASC")
+    fun getAllExpensesByAmountAsc(): Flow<List<ExpenseWithCategories>>
+
+    @Transaction
+    @Query("SELECT * FROM expenses ORDER BY name COLLATE NOCASE ASC")
+    fun getAllExpensesByNameAsc(): Flow<List<ExpenseWithCategories>>
+
+    @Transaction
+    @Query("SELECT * FROM expenses ORDER BY name COLLATE NOCASE DESC")
+    fun getAllExpensesByNameDesc(): Flow<List<ExpenseWithCategories>>
+
 }
 
 // !! Suspend means the function runs in a coroutine

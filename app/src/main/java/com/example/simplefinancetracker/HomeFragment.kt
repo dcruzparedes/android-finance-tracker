@@ -1,14 +1,20 @@
 package com.example.simplefinancetracker
 
+//TODO: Add category filter
+//TODO: Add a select all button
+
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.simplefinancetracker.databinding.FragmentHomeBinding
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class HomeFragment : Fragment() {
@@ -16,6 +22,7 @@ class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
     private lateinit var adapter: ExpenseAdapter
+    private var observationJob: Job? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -29,8 +36,27 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupRecyclerView()
-        observeExpenses()
+        setupSortDropdown()
+        observeExpenses(R.string.sort_by_creation_date_selection_text.toString()) // Default sort
         setupButtons()
+    }
+
+    private fun setupSortDropdown() {
+        val options = arrayOf(
+            getString(R.string.sort_by_creation_date_selection_text),
+            getString(R.string.sort_by_name_ascending_selection_text),
+            getString(R.string.sort_by_name_descending_selection_text),
+            getString(R.string.sort_by_amount_ascending_selection_text),
+            getString(R.string.sort_by_amount_descending_selection_text)
+        )
+        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, options)
+        binding.sortAutoComplete.setAdapter(adapter)
+        binding.sortAutoComplete.setText(options[0], false)
+
+        binding.sortAutoComplete.setOnItemClickListener { _, _, position, _ ->
+            val selected = options[position]
+            observeExpenses(selected)
+        }
     }
 
     private fun setupRecyclerView() {
@@ -71,14 +97,24 @@ class HomeFragment : Fragment() {
         }
     }
 
-    private fun observeExpenses() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            ExpenseDatabase.getDatabase(requireContext())
-                .expenseDao()
-                .getAllExpensesWithCategories()
-                .collect { expenses ->
-                    adapter.submitList(expenses)
-                }
+    private fun observeExpenses(sortType: String) {
+        // Cancel previous observation if it exists to avoid multiple collectors
+        observationJob?.cancel()
+        
+        observationJob = viewLifecycleOwner.lifecycleScope.launch {
+            val dao = ExpenseDatabase.getDatabase(requireContext()).expenseDao()
+
+            val flow = when (sortType) {
+                getString(R.string.sort_by_amount_descending_selection_text) -> dao.getAllExpensesByAmountDesc()
+                getString(R.string.sort_by_amount_ascending_selection_text) -> dao.getAllExpensesByAmountAsc()
+                getString(R.string.sort_by_name_ascending_selection_text) -> dao.getAllExpensesByNameAsc()
+                getString(R.string.sort_by_name_descending_selection_text) -> dao.getAllExpensesByNameDesc()
+                else -> dao.getAllExpensesWithCategories() // Default/Date
+            }
+
+            flow.collectLatest { expenses ->
+                adapter.submitList(expenses)
+            }
         }
     }
 

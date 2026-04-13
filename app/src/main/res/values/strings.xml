@@ -25,5 +25,13 @@
     <string name="error_saving_expense">Error saving expense</string>
     <string name="expense_deleted_success">Expense deleted successfully"</string>
     <string name="edit_expense_title">Edit Expense</string>
+    <string name="sort_by_title_text">Sort by</string>
+    <string name="sort_by_creation_date_selection_text">Creation date</string>
+    <string name="sort_by_name_ascending_selection_text">Name (A to Z)</string>
+    <string name="sort_by_name_descending_selection_text">Name (Z to A)</string>
+    <string name="sort_by_amount_ascending_selection_text">Amount (Ascending)</string>
+    <string name="sort_by_amount_descending_selection_text">Amount (Descending)</string>
+
+
 
 </resources>

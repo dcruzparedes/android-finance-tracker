@@ -60,7 +60,7 @@ class AddExpenseActivity : AppCompatActivity() {
             DatePickerDialog(
                 this,
                 { _, year, month, day ->
-                    binding.etDate.setText("%02d/%02d/%d".format(day, month + 1, year))
+                    binding.etDate.setText("%d-%02d-%02d".format(year, month + 1, day))
                 },
                 calendar.get(Calendar.YEAR),
                 calendar.get(Calendar.MONTH),
