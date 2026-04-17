@@ -31,7 +31,9 @@
     <string name="sort_by_name_descending_selection_text">Name (Z to A)</string>
     <string name="sort_by_amount_ascending_selection_text">Amount (Ascending)</string>
     <string name="sort_by_amount_descending_selection_text">Amount (Descending)</string>
-
+    <string name="filter_by_category_selection_text">Filter by Category</string>
+    <string name="all_categories_selection_text">All Categories</string>
+    <string name="no_expenses_found">There are no expenses for this category</string>
 
 
 </resources>

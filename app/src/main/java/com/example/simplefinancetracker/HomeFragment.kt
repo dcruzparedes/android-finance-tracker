@@ -1,6 +1,5 @@
 package com.example.simplefinancetracker
 
-//TODO: Add category filter
 //TODO: Add a select all button
 
 import android.content.Intent
@@ -23,6 +22,8 @@ class HomeFragment : Fragment() {
     private val binding get() = _binding!!
     private lateinit var adapter: ExpenseAdapter
     private var observationJob: Job? = null
+    private var currentSortType: String = ""
+    private var currentCategoryId: Int? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -37,7 +38,10 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setupRecyclerView()
         setupSortDropdown()
-        observeExpenses(R.string.sort_by_creation_date_selection_text.toString()) // Default sort
+        setupFilterDropdown()
+        
+        currentSortType = getString(R.string.sort_by_creation_date_selection_text)
+        observeExpenses() 
         setupButtons()
     }
 
@@ -54,8 +58,30 @@ class HomeFragment : Fragment() {
         binding.sortAutoComplete.setText(options[0], false)
 
         binding.sortAutoComplete.setOnItemClickListener { _, _, position, _ ->
-            val selected = options[position]
-            observeExpenses(selected)
+            currentSortType = options[position]
+            observeExpenses()
+        }
+    }
+
+    private fun setupFilterDropdown() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            val db = ExpenseDatabase.getDatabase(requireContext())
+            db.categoryDao().getAllCategories().collectLatest { categories ->
+                val options = mutableListOf(getString(R.string.all_categories_selection_text))
+                options.addAll(categories.map { it.name })
+                
+                val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, options)
+                binding.filterAutoComplete.setAdapter(adapter)
+                
+                if (binding.filterAutoComplete.text.isEmpty()) {
+                    binding.filterAutoComplete.setText(options[0], false)
+                }
+
+                binding.filterAutoComplete.setOnItemClickListener { _, _, position, _ ->
+                    currentCategoryId = if (position == 0) null else categories[position - 1].id
+                    observeExpenses()
+                }
+            }
         }
     }
 
@@ -97,14 +123,14 @@ class HomeFragment : Fragment() {
         }
     }
 
-    private fun observeExpenses(sortType: String) {
+    private fun observeExpenses() {
         // Cancel previous observation if it exists to avoid multiple collectors
         observationJob?.cancel()
         
         observationJob = viewLifecycleOwner.lifecycleScope.launch {
             val dao = ExpenseDatabase.getDatabase(requireContext()).expenseDao()
 
-            val flow = when (sortType) {
+            val flow = when (currentSortType) {
                 getString(R.string.sort_by_amount_descending_selection_text) -> dao.getAllExpensesByAmountDesc()
                 getString(R.string.sort_by_amount_ascending_selection_text) -> dao.getAllExpensesByAmountAsc()
                 getString(R.string.sort_by_name_ascending_selection_text) -> dao.getAllExpensesByNameAsc()
@@ -113,7 +139,18 @@ class HomeFragment : Fragment() {
             }
 
             flow.collectLatest { expenses ->
-                adapter.submitList(expenses)
+                val filteredList = if (currentCategoryId == null) {
+                    expenses
+                } else {
+                    expenses.filter { item -> 
+                        item.categories.any { it.id == currentCategoryId }
+                    }
+                }
+                adapter.submitList(filteredList)
+                
+                // Show empty state message if list is empty
+                binding.tvNoExpenses.visibility = if (filteredList.isEmpty()) View.VISIBLE else View.GONE
+                binding.rvExpenses.visibility = if (filteredList.isEmpty()) View.GONE else View.VISIBLE
             }
         }
     }
