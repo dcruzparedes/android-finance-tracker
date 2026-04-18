@@ -1,15 +1,17 @@
 package com.example.simplefinancetracker
 
-import android.app.DatePickerDialog
 import android.os.Bundle
 import android.widget.ArrayAdapter
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.example.simplefinancetracker.databinding.ActivityAddExpenseBinding
+import com.google.android.material.datepicker.MaterialDatePicker
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import java.util.Calendar
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import java.util.TimeZone
 
 class AddExpenseActivity : AppCompatActivity() {
 
@@ -22,6 +24,10 @@ class AddExpenseActivity : AppCompatActivity() {
         binding = ActivityAddExpenseBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        setSupportActionBar(binding.toolbar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        binding.toolbar.setNavigationOnClickListener { finish() }
+
         db = ExpenseDatabase.getDatabase(this)
 
         setupCategoryDropdown()
@@ -33,7 +39,7 @@ class AddExpenseActivity : AppCompatActivity() {
     private fun setupCurrency() {
         val prefs = getSharedPreferences("settings", MODE_PRIVATE)
         val currency = prefs.getString("currency", "$") ?: "$"
-        binding.etAmount.hint = "Amount ($currency)"
+        binding.tilAmount.prefixText = currency
     }
 
     private fun setupCategoryDropdown() {
@@ -51,28 +57,25 @@ class AddExpenseActivity : AppCompatActivity() {
             }
 
             val categoryNames = allCategories.map { it.name }
-            val adapter = ArrayAdapter(this@AddExpenseActivity, android.R.layout.simple_dropdown_item_1line, categoryNames)
+            val adapter = ArrayAdapter(this@AddExpenseActivity, R.layout.list_item, categoryNames)
             binding.actvCategory.setAdapter(adapter)
-            binding.actvCategory.setOnClickListener {
-                binding.actvCategory.showDropDown()
-            }
-            // Make it so the keyboard doesn't pop up when the dropdown is clicked
-            binding.actvCategory.inputType = android.text.InputType.TYPE_NULL
         }
     }
 
     private fun setupDatePicker() {
         binding.etDate.setOnClickListener {
-            val calendar = Calendar.getInstance()
-            DatePickerDialog(
-                this,
-                { _, year, month, day ->
-                    binding.etDate.setText("%d-%02d-%02d".format(year, month + 1, day))
-                },
-                calendar.get(Calendar.YEAR),
-                calendar.get(Calendar.MONTH),
-                calendar.get(Calendar.DAY_OF_MONTH)
-            ).show()
+            val datePicker = MaterialDatePicker.Builder.datePicker()
+                .setTitleText(getString(R.string.date_field_hint_text))
+                .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
+                .build()
+
+            datePicker.addOnPositiveButtonClickListener { selection ->
+                val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                sdf.timeZone = TimeZone.getTimeZone("UTC")
+                binding.etDate.setText(sdf.format(Date(selection)))
+            }
+            
+            datePicker.show(supportFragmentManager, "DATE_PICKER")
         }
     }
 
@@ -84,29 +87,42 @@ class AddExpenseActivity : AppCompatActivity() {
         binding.btnSave.setOnClickListener {
             val name = binding.etName.text.toString().trim()
             val amountText = binding.etAmount.text.toString().trim()
-            val date = binding.etDate.text.toString().trim()
+            var date = binding.etDate.text.toString().trim()
             var selectedCategoryName = binding.actvCategory.text.toString().trim()
 
-            if (name.isEmpty() || amountText.isEmpty() || date.isEmpty()) {
-                Toast.makeText(this, R.string.error_complete_fields, Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
+            // Reset errors
+            binding.tilName.error = null
+            binding.tilAmount.error = null
 
-            if (selectedCategoryName.isEmpty()) {
-                selectedCategoryName = "Other"
+            var hasError = false
+
+            if (name.isEmpty()) {
+                binding.tilName.error = getString(R.string.error_name_is_required)
+                hasError = true
             }
 
             val amount = amountText.toDoubleOrNull()
             if (amount == null || amount <= 0) {
-                Toast.makeText(this, R.string.error_invalid_amount, Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
+                binding.tilAmount.error = getString(R.string.error_invalid_amount)
+                hasError = true
+            }
+
+            if (date.isEmpty()) {
+                val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                date = sdf.format(Date())
+            }
+
+            if (hasError) return@setOnClickListener
+
+            if (selectedCategoryName.isEmpty()) {
+                selectedCategoryName = "Other"
             }
 
             lifecycleScope.launch {
                 val expenseId = db.expenseDao().insertExpense(
                     Expense(
                         name = name,
-                        amount = amount,
+                        amount = amount!!,
                         date = date
                     )
                 ).toInt()
