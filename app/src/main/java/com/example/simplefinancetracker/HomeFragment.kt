@@ -1,7 +1,5 @@
 package com.example.simplefinancetracker
 
-//TODO: Add a select all button
-
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -95,9 +93,16 @@ class HomeFragment : Fragment() {
             },
             onSelectionChanged = { count ->
                 if (count > 0) {
-                    binding.btnDeleteSelected.visibility = View.VISIBLE
+                    binding.selectionContainer.visibility = View.VISIBLE
+                    
+                    // Update icon based on whether all visible items are selected or not
+                    val isAllSelected = count == adapter.currentList.size
+                    binding.btnSelectAll.setIconResource(
+                        if (isAllSelected) R.drawable.ic_check_box 
+                        else R.drawable.ic_check_box_outline_blank
+                    )
                 } else {
-                    binding.btnDeleteSelected.visibility = View.GONE
+                    binding.selectionContainer.visibility = View.GONE
                 }
             }
         )
@@ -119,6 +124,15 @@ class HomeFragment : Fragment() {
                     db.expenseDao().deleteExpense(id)
                 }
                 adapter.clearSelection()
+            }
+        }
+
+        binding.btnSelectAll.setOnClickListener {
+            val allSelected = adapter.getSelectedIds().size == adapter.currentList.size
+            if (allSelected) {
+                adapter.clearSelection()
+            } else {
+                adapter.selectAll()
             }
         }
     }

@@ -82,6 +82,14 @@ class ExpenseAdapter(
         notifyDataSetChanged() // Refresh to update visual states (TODO: Change this to only refresh the selected item)
     }
 
+    fun selectAll() {
+        isSelectionMode = true
+        selectedIds.clear()
+        selectedIds.addAll(currentList.map { it.expense.id })
+        onSelectionChanged(selectedIds.size)
+        notifyDataSetChanged()
+    }
+
     fun getSelectedIds(): List<Int> = selectedIds.toList()
 
     fun clearSelection() {
