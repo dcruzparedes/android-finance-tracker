@@ -34,4 +34,8 @@
     <string name="filter_by_category_selection_text">Filtrar por Categoría</string>
     <string name="all_categories_selection_text">Todas las Categorías</string>
     <string name="no_expenses_found">No hay gastos para esta categoría</string>
+    <string name="spending_overview_title_text">Resumen de Gastos</string>
+    <string name="total_spent_title_text">Total Gastado</string>
+    <string name="category_breakdown_title_text">Desglose de Categorías</string>
+    <string name="category_name_tv_text">Categoría</string>
 </resources>

@@ -34,6 +34,10 @@
     <string name="filter_by_category_selection_text">Filter by Category</string>
     <string name="all_categories_selection_text">All Categories</string>
     <string name="no_expenses_found">There are no expenses for this category</string>
+    <string name="spending_overview_title_text">Spending Overview</string>
+    <string name="total_spent_title_text">Total Spent</string>
+    <string name="category_breakdown_title_text">Category Breakdown</string>
+    <string name="category_name_tv_text">Category</string>
 
 
 </resources>

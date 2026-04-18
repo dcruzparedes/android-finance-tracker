@@ -29,7 +29,7 @@ class ExpenseAdapter(
         fun bind(item: ExpenseWithCategories) {
             binding.tvName.text = item.expense.name
             binding.tvDate.text = item.expense.date
-            binding.tvAmount.text = "L. %.2f".format(item.expense.amount) // TODO: Make currency customizable
+            binding.tvAmount.text = "L%.2f".format(item.expense.amount) // TODO: Make currency customizable
             binding.tvCategory.text = item.categories.joinToString(", ") { it.name }
 
             // Visual state for selection
