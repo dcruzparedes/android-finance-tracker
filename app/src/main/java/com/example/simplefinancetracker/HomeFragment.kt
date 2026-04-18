@@ -43,6 +43,17 @@ class HomeFragment : Fragment() {
         setupButtons()
     }
 
+    override fun onResume() {
+        super.onResume()
+        updateCurrency()
+    }
+
+    private fun updateCurrency() {
+        val prefs = requireContext().getSharedPreferences("settings", android.content.Context.MODE_PRIVATE)
+        val currency = prefs.getString("currency", "$") ?: "$"
+        adapter.updateCurrency(currency)
+    }
+
     private fun setupSortDropdown() {
         val options = arrayOf(
             getString(R.string.sort_by_creation_date_selection_text),

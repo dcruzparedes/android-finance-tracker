@@ -10,8 +10,14 @@ import com.example.simplefinancetracker.databinding.ItemExpenseBinding
 
 class ExpenseAdapter(
     private val onItemClick: (ExpenseWithCategories) -> Unit,
-    private val onSelectionChanged: (Int) -> Unit
+    private val onSelectionChanged: (Int) -> Unit,
+    private var currencySymbol: String = "$"
 ) : ListAdapter<ExpenseWithCategories, ExpenseAdapter.ExpenseViewHolder>(DiffCallback) {
+
+    fun updateCurrency(newSymbol: String) {
+        currencySymbol = newSymbol
+        notifyDataSetChanged()
+    }
 
     private val selectedIds = mutableSetOf<Int>()
     var isSelectionMode = false
@@ -29,7 +35,7 @@ class ExpenseAdapter(
         fun bind(item: ExpenseWithCategories) {
             binding.tvName.text = item.expense.name
             binding.tvDate.text = item.expense.date
-            binding.tvAmount.text = "L%.2f".format(item.expense.amount) // TODO: Make currency customizable
+            binding.tvAmount.text = "%s %.2f".format(currencySymbol, item.expense.amount)
             binding.tvCategory.text = item.categories.joinToString(", ") { it.name }
 
             // Visual state for selection

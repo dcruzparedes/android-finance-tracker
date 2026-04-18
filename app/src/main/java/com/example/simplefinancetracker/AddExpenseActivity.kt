@@ -26,7 +26,14 @@ class AddExpenseActivity : AppCompatActivity() {
 
         setupCategoryDropdown()
         setupDatePicker()
+        setupCurrency()
         setupButtons()
+    }
+
+    private fun setupCurrency() {
+        val prefs = getSharedPreferences("settings", MODE_PRIVATE)
+        val currency = prefs.getString("currency", "$") ?: "$"
+        binding.etAmount.hint = "Amount ($currency)"
     }
 
     private fun setupCategoryDropdown() {
@@ -86,7 +93,7 @@ class AddExpenseActivity : AppCompatActivity() {
             }
 
             if (selectedCategoryName.isEmpty()) {
-                selectedCategoryName = "Other" // TODO: Make sure this is the default category
+                selectedCategoryName = "Other"
             }
 
             val amount = amountText.toDoubleOrNull()

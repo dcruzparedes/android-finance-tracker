@@ -35,7 +35,14 @@ class EditExpenseActivity : AppCompatActivity() {
 
         setupToolbar()
         loadExpenseData()
+        setupCurrency()
         setupListeners()
+    }
+
+    private fun setupCurrency() {
+        val prefs = getSharedPreferences("settings", MODE_PRIVATE)
+        val currency = prefs.getString("currency", "$") ?: "$"
+        binding.amountInputLayout.prefixText = "$currency "
     }
 
     private fun setupToolbar() {
