@@ -5,15 +5,20 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database(entities = [Expense::class], version = 1, exportSchema = false)
+@Database(
+    entities = [Expense::class,
+        Category::class,
+        ExpenseCategoryCrossRef::class], version = 2, exportSchema = false
+)
 abstract class ExpenseDatabase : RoomDatabase() {
 
-    abstract fun expenseDao() : ExpenseDao
+    abstract fun expenseDao(): ExpenseDao
+    abstract fun categoryDao(): CategoryDao
 
     // Companion object implements singleton pattern
     companion object {
         @Volatile
-        private var INSTANCE : ExpenseDatabase? = null
+        private var INSTANCE: ExpenseDatabase? = null
 
         fun getDatabase(context: Context): ExpenseDatabase {
             return INSTANCE ?: synchronized(this) {
