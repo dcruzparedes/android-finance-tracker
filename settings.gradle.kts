@@ -19,5 +19,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Simple Finance Tracker"
+rootProject.name = "ExTra"
 include(":app")
