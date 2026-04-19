@@ -1,23 +1,27 @@
 package com.example.simplefinancetracker
 
-import android.app.DatePickerDialog
 import android.os.Bundle
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
-import com.example.simplefinancetracker.databinding.ActivityViewAndEditExpenseBinding
 import androidx.room.withTransaction
-import com.google.android.material.chip.Chip
+import com.example.simplefinancetracker.databinding.ActivityViewAndEditExpenseBinding
+import com.google.android.material.datepicker.MaterialDatePicker
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import java.util.*
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import java.util.TimeZone
 
 class EditExpenseActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityViewAndEditExpenseBinding
     private lateinit var db: ExpenseDatabase
     private var expenseId: Int = -1
-    private var selectedDate: Calendar = Calendar.getInstance()
+    private var allCategories: List<Category> = emptyList()
+    private var selectedDateMillis: Long = System.currentTimeMillis()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,21 +32,14 @@ class EditExpenseActivity : AppCompatActivity() {
         expenseId = intent.getIntExtra("EXPENSE_ID", -1)
 
         if (expenseId == -1) {
-            Toast.makeText(this, "@string/error_expense_not_found", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Expense not found", Toast.LENGTH_SHORT).show()
             finish()
             return
         }
 
         setupToolbar()
-        loadExpenseData()
         setupCurrency()
-        setupListeners()
-    }
-
-    private fun setupCurrency() {
-        val prefs = getSharedPreferences("settings", MODE_PRIVATE)
-        val currency = prefs.getString("currency", "$") ?: "$"
-        binding.amountInputLayout.prefixText = "$currency "
+        loadData()
     }
 
     private fun setupToolbar() {
@@ -51,121 +48,126 @@ class EditExpenseActivity : AppCompatActivity() {
         binding.toolbar.setNavigationOnClickListener { finish() }
     }
 
-    private fun loadExpenseData() {
-        lifecycleScope.launch {
-            // Fetch the expense with its categories
-            val expensesWithCategories = db.expenseDao().getAllExpensesWithCategories().first()
-            val item = expensesWithCategories.find { it.expense.id == expenseId }
-
-            item?.let {
-                binding.nameEditText.setText(it.expense.name)
-                binding.amountEditText.setText(it.expense.amount.toString())
-                binding.dateEditText.setText(it.expense.date)
-                
-                // For date picker initialization
-                val dateParts = it.expense.date.split("-")
-                if (dateParts.size == 3) {
-                    selectedDate.set(dateParts[0].toInt(), dateParts[1].toInt() - 1, dateParts[2].toInt())
-                }
-
-                loadCategories(it.categories)
-            }
-        }
+    private fun setupCurrency() {
+        val prefs = getSharedPreferences("settings", MODE_PRIVATE)
+        val currency = prefs.getString("currency", "$") ?: "$"
+        binding.tilAmount.prefixText = currency
     }
 
-    private fun loadCategories(selectedCategories: List<Category>) {
+    private fun loadData() {
         lifecycleScope.launch {
-            // Use first() instead of collect to prevent UI refresh while editing
-            val allCategories = db.categoryDao().getAllCategories().first()
-            binding.categoryChipGroup.removeAllViews()
-            allCategories.forEach { category ->
-                val chip = Chip(this@EditExpenseActivity).apply {
-                    text = category.name
-                    isCheckable = true
-                    isChecked = selectedCategories.any { it.id == category.id }
-                    tag = category.id
+            // Load all categories for the dropdown
+            allCategories = db.categoryDao().getAllCategories().first()
+            val categoryNames = allCategories.map { it.name }
+            val adapter = ArrayAdapter(this@EditExpenseActivity, R.layout.list_item, categoryNames)
+            binding.actvCategory.setAdapter(adapter)
+
+            val item = db.expenseDao().getExpenseWithCategoriesById(expenseId).first()
+
+            item?.let {
+                binding.etName.setText(it.expense.name)
+                binding.etAmount.setText(it.expense.amount.toString())
+                binding.etDate.setText(it.expense.date)
+
+                // Parse date for the date picker
+                try {
+                    val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                    sdf.timeZone = TimeZone.getTimeZone("UTC")
+                    val date = sdf.parse(it.expense.date)
+                    if (date != null) {
+                        selectedDateMillis = date.time
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
                 }
-                binding.categoryChipGroup.addView(chip)
+
+                if (it.categories.isNotEmpty()) {
+                    binding.actvCategory.setText(it.categories[0].name, false)
+                }
+            } ?: run {
+                Toast.makeText(this@EditExpenseActivity, "Expense not found", Toast.LENGTH_SHORT).show()
+                finish()
             }
+
+            setupListeners()
         }
     }
 
     private fun setupListeners() {
-        binding.dateEditText.setOnClickListener {
-            showDatePicker()
+        binding.etDate.setOnClickListener {
+            val datePicker = MaterialDatePicker.Builder.datePicker()
+                .setTitleText(getString(R.string.date_field_hint_text))
+                .setSelection(selectedDateMillis)
+                .build()
+
+            datePicker.addOnPositiveButtonClickListener { selection ->
+                selectedDateMillis = selection
+                val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                sdf.timeZone = TimeZone.getTimeZone("UTC")
+                binding.etDate.setText(sdf.format(Date(selection)))
+            }
+            
+            datePicker.show(supportFragmentManager, "DATE_PICKER")
         }
 
-        binding.saveButton.setOnClickListener {
+        binding.btnSave.setOnClickListener {
             saveExpense()
         }
 
-        binding.deleteButton.setOnClickListener {
+        binding.btnDelete.setOnClickListener {
             deleteExpense()
         }
     }
 
-    private fun showDatePicker() {
-        DatePickerDialog(
-            this,
-            { _, year, month, dayOfMonth ->
-                selectedDate.set(year, month, dayOfMonth)
-                val dateString = "%d-%02d-%02d".format(year, month + 1, dayOfMonth)
-                binding.dateEditText.setText(dateString)
-            },
-            selectedDate.get(Calendar.YEAR),
-            selectedDate.get(Calendar.MONTH),
-            selectedDate.get(Calendar.DAY_OF_MONTH)
-        ).show()
-    }
-
     private fun saveExpense() {
-        val name = binding.nameEditText.text.toString()
-        val amount = binding.amountEditText.text.toString().toDoubleOrNull() ?: 0.0
-        val date = binding.dateEditText.text.toString()
+        val name = binding.etName.text.toString().trim()
+        val amountText = binding.etAmount.text.toString().trim()
+        val date = binding.etDate.text.toString().trim()
+        val selectedCategoryName = binding.actvCategory.text.toString().trim()
 
-        if (name.isBlank()) {
-            binding.nameInputLayout.error = getString(R.string.error_name_is_required)
-            return
+        binding.tilName.error = null
+        binding.tilAmount.error = null
+
+        var hasError = false
+        if (name.isEmpty()) {
+            binding.tilName.error = getString(R.string.error_name_is_required)
+            hasError = true
         }
 
-        // Gather selected category IDs from the ChipGroup
-        val selectedCategoryIds = mutableListOf<Int>()
-        for (i in 0 until binding.categoryChipGroup.childCount) {
-            val chip = binding.categoryChipGroup.getChildAt(i) as? Chip
-            if (chip?.isChecked == true) {
-                selectedCategoryIds.add(chip.tag as Int)
-            }
+        val amount = amountText.toDoubleOrNull()
+        if (amount == null || amount <= 0) {
+            binding.tilAmount.error = getString(R.string.error_invalid_amount)
+            hasError = true
         }
+
+        if (hasError) return
 
         lifecycleScope.launch {
             try {
-                // Fetch the original expense to preserve its createdAt timestamp
-                val expensesWithCategories = db.expenseDao().getAllExpensesWithCategories().first()
-                val originalExpense = expensesWithCategories.find { it.expense.id == expenseId }?.expense
-                
+                val item = db.expenseDao().getExpenseWithCategoriesById(expenseId).first()
+                val originalExpense = item?.expense
                 val createdAt = originalExpense?.createdAt ?: System.currentTimeMillis()
-                
+
                 val updatedExpense = Expense(
-                    id = expenseId, 
-                    name = name, 
-                    amount = amount, 
+                    id = expenseId,
+                    name = name,
+                    amount = amount!!,
                     date = date,
                     createdAt = createdAt
                 )
-                
-                // Use withTransaction to ensure atomic update of expense and its category links
+
+                val selectedCategory = allCategories.find { it.name == selectedCategoryName }
+
                 db.withTransaction {
                     db.expenseDao().updateExpense(updatedExpense)
-                    
-                    // Remove old category links and insert new ones
                     db.categoryDao().deleteRefsByExpenseId(expenseId)
-                    selectedCategoryIds.forEach { categoryId ->
+                    if (selectedCategory != null) {
                         db.categoryDao().insertExpenseCategoryRef(
-                            ExpenseCategoryCrossRef(expenseId, categoryId)
+                            ExpenseCategoryCrossRef(expenseId, selectedCategory.id)
                         )
                     }
                 }
-                
+
                 Toast.makeText(this@EditExpenseActivity, getString(R.string.expense_updated_success), Toast.LENGTH_SHORT).show()
                 finish()
             } catch (e: Exception) {

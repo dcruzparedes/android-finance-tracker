@@ -19,6 +19,9 @@ interface CategoryDao {
     @Query("SELECT * FROM categories WHERE id = :id")
     fun getCategoryById(id: Int): Flow<Category>
 
+    @Query("SELECT * FROM categories WHERE name = :name COLLATE NOCASE")
+    suspend fun getCategoryByName(name: String): Category?
+
     @Update
     suspend fun updateCategory(category: Category)
 

@@ -48,6 +48,15 @@ interface ExpenseDao {
     @Query("SELECT * FROM expenses ORDER BY name COLLATE NOCASE DESC")
     fun getAllExpensesByNameDesc(): Flow<List<ExpenseWithCategories>>
 
+    @Transaction
+    @Query("SELECT * FROM expenses WHERE id = :id")
+    fun getExpenseWithCategoriesById(id: Int): Flow<ExpenseWithCategories?>
+
+    @Query("SELECT expenses.* FROM expenses INNER JOIN expense_category_join ON expenses.id = expense_category_join.expenseId WHERE expense_category_join.categoryId = :categoryId")
+    fun getExpensesForCategory(categoryId: Int): Flow<List<Expense>>
+
+    @Query("DELETE FROM expenses")
+    suspend fun deleteAllExpenses()
 }
 
 // !! Suspend means the function runs in a coroutine

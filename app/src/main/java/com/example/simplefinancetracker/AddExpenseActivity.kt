@@ -49,7 +49,7 @@ class AddExpenseActivity : AppCompatActivity() {
 
             // If database is empty, send some default categories
             if (allCategories.isEmpty()) {
-                val defaultNames = listOf("Food", "Work", "University", "Other")
+                val defaultNames = listOf("Pending", "Other")
                 defaultNames.forEach { name ->
                     db.categoryDao().insertCategory(Category(name = name))
                 }

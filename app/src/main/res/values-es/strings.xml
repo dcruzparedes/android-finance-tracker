@@ -48,4 +48,13 @@
     <string name="clear_data_dialog_message">¿Estás seguro que quieres borrar todos los gastos y categorías? Esta acción no se puede deshacer.</string>
     <string name="clear_everything_button">Borrar Todo</string>
     <string name="all_data_cleared">Se han borrado los datos</string>
+    <string name="categories_config_title_text">Categorías</string>
+    <string name="add_category_hint">Agregar Categoría</string>
+    <string name="category_exists_error">La categoría ya existe</string>
+    <string name="category_delete_error_title">No se pudo borrar la categoría</string>
+    <string name="category_delete_error_message">Esta categoría no puede ser borrada ya que hay gastos usándola.</string>
+    <string name="edit_category_title">Editar Categoría</string>
+    <string name="category_updated_success">Categoría actualizada exitosamente</string>
+    <string name="category_deleted_success">Categoría eliminada exitosamente</string>
+    <string name="ok_button">OK</string>
 </resources>
