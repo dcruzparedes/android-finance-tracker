@@ -134,5 +134,5 @@ Technologies used in the project:
 
 <section>
     <h2>License</h2>
-    <p>No license is currently specified in this repository.</p>
+    <p>This project is licensed under the <strong>MIT License</strong>. See the <a href="LICENSE">LICENSE</a> file for details.</p>
 </section>
