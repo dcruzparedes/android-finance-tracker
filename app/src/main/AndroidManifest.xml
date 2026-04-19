@@ -26,6 +26,11 @@
             android:exported="false"/>
 
         <activity
+            android:name=".AddExpenseDialogActivity"
+            android:exported="false"
+            android:theme="@style/Theme.SimpleFinanceTracker.Dialog" />
+
+        <activity
             android:name=".EditExpenseActivity"
             android:exported="false"
             android:label="Edit Expense" />

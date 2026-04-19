@@ -12,7 +12,7 @@ class ExpenseTileService : TileService() {
     override fun onClick() {
         super.onClick()
 
-        val intent = Intent(this, AddExpenseActivity::class.java).apply {
+        val intent = Intent(this, AddExpenseDialogActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK
         }
 
