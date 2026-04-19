@@ -1,4 +1,4 @@
-package com.example.simplefinancetracker
+package com.example.extra
 
 import android.annotation.SuppressLint
 import android.app.PendingIntent

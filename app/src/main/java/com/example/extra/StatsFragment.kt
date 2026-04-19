@@ -1,4 +1,4 @@
-package com.example.simplefinancetracker
+package com.example.extra
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,8 +7,8 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import com.example.simplefinancetracker.databinding.FragmentStatsBinding
-import com.example.simplefinancetracker.databinding.ItemCategorySummaryBinding
+import com.example.extra.databinding.FragmentStatsBinding
+import com.example.extra.databinding.ItemCategorySummaryBinding
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch

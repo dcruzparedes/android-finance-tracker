@@ -1,4 +1,4 @@
-package com.example.simplefinancetracker
+package com.example.extra
 
 import android.os.Bundle
 import android.widget.ArrayAdapter
@@ -6,7 +6,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.room.withTransaction
-import com.example.simplefinancetracker.databinding.ActivityViewAndEditExpenseBinding
+import com.example.extra.databinding.ActivityViewAndEditExpenseBinding
 import com.google.android.material.datepicker.MaterialDatePicker
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch

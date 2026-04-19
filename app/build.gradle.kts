@@ -5,13 +5,13 @@ plugins {
 }
 
 android {
-    namespace = "com.example.simplefinancetracker"
+    namespace = "com.example.extra"
     compileSdk {
         version = release(36)
     }
 
     defaultConfig {
-        applicationId = "com.example.simplefinancetracker"
+        applicationId = "com.example.extra"
         minSdk = 29
         targetSdk = 36
         versionCode = 1

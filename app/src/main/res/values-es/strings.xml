@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">" Simple Finance Tracker "</string>
     <string name="add_expense_text">Agregar Gasto</string>
     <string name="cancel_button_text">Cancelar</string>
     <string name="save_button_text">Guardar</string>

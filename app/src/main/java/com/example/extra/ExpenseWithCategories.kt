@@ -1,4 +1,4 @@
-package com.example.simplefinancetracker
+package com.example.extra
 
 import androidx.room.Embedded
 import androidx.room.Junction

@@ -1,10 +1,10 @@
-package com.example.simplefinancetracker
+package com.example.extra
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
-import com.example.simplefinancetracker.databinding.ActivityMainBinding
+import com.example.extra.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
 

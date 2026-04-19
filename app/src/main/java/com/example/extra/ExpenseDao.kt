@@ -1,4 +1,4 @@
-package com.example.simplefinancetracker
+package com.example.extra
 
 import androidx.room.Dao
 import androidx.room.Insert

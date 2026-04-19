@@ -1,4 +1,4 @@
-package com.example.simplefinancetracker
+package com.example.extra
 
 import android.util.TypedValue
 import android.view.LayoutInflater
@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.example.simplefinancetracker.databinding.ItemExpenseBinding
+import com.example.extra.databinding.ItemExpenseBinding
 
 class ExpenseAdapter(
     private val onItemClick: (ExpenseWithCategories) -> Unit,

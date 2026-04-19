@@ -1,4 +1,4 @@
-package com.example.simplefinancetracker
+package com.example.extra
 
 import android.content.Context
 import android.os.Bundle
@@ -10,8 +10,8 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import com.example.simplefinancetracker.databinding.FragmentSettingsBinding
-import com.example.simplefinancetracker.databinding.ItemCategoryConfigBinding
+import com.example.extra.databinding.FragmentSettingsBinding
+import com.example.extra.databinding.ItemCategoryConfigBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.firstOrNull

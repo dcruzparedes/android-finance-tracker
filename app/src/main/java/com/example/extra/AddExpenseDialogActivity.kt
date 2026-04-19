@@ -1,10 +1,10 @@
-package com.example.simplefinancetracker
+package com.example.extra
 
 import android.os.Bundle
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
-import com.example.simplefinancetracker.databinding.ActivityAddExpenseBinding
+import com.example.extra.databinding.ActivityAddExpenseDialogBinding
 import com.google.android.material.datepicker.MaterialDatePicker
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -13,15 +13,15 @@ import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
 
-class AddExpenseActivity : AppCompatActivity() {
+class AddExpenseDialogActivity : AppCompatActivity() {
 
-    private lateinit var binding: ActivityAddExpenseBinding
+    private lateinit var binding: ActivityAddExpenseDialogBinding
     private lateinit var db: ExpenseDatabase
     private var allCategories: List<Category> = emptyList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityAddExpenseBinding.inflate(layoutInflater)
+        binding = ActivityAddExpenseDialogBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         setSupportActionBar(binding.toolbar)
@@ -44,10 +44,8 @@ class AddExpenseActivity : AppCompatActivity() {
 
     private fun setupCategoryDropdown() {
         lifecycleScope.launch {
-            // Load categories from database
             allCategories = db.categoryDao().getAllCategories().first()
 
-            // If database is empty, send some default categories
             if (allCategories.isEmpty()) {
                 val defaultNames = listOf("Pending", "Other")
                 defaultNames.forEach { name ->
@@ -57,7 +55,7 @@ class AddExpenseActivity : AppCompatActivity() {
             }
 
             val categoryNames = allCategories.map { it.name }
-            val adapter = ArrayAdapter(this@AddExpenseActivity, R.layout.list_item, categoryNames)
+            val adapter = ArrayAdapter(this@AddExpenseDialogActivity, R.layout.list_item, categoryNames)
             binding.actvCategory.setAdapter(adapter)
         }
     }
@@ -90,7 +88,6 @@ class AddExpenseActivity : AppCompatActivity() {
             var date = binding.etDate.text.toString().trim()
             var selectedCategoryName = binding.actvCategory.text.toString().trim()
 
-            // Reset errors
             binding.tilName.error = null
             binding.tilAmount.error = null
 
@@ -129,7 +126,6 @@ class AddExpenseActivity : AppCompatActivity() {
 
                 val category = allCategories.find { it.name == selectedCategoryName }
 
-                // Link category and expense in the Join Table
                 if (category != null) {
                     db.categoryDao().insertExpenseCategoryRef(
                         ExpenseCategoryCrossRef(
